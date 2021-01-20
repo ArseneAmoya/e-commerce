@@ -1,0 +1,16 @@
+{
+  "name": "projet-middleware",
+  "version": "1.0.0",
+  "description": "Exerce middleware creer un site e-commerce",
+  "main": "server.js",
+  "dependencies": {
+    "nodemon": "^2.0.7",
+    "pg": "^8.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm run nodemon"
+  },
+  "author": "KIRA & Abasse",
+  "license": "ISC"
+}
