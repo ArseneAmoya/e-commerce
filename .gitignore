@@ -1,5 +1,5 @@
 server-banque/node_modules
-server-clientele/node-modules
-server-facturation/node-modules
-server-stock/node-modules
-server-livraison/node-modules
+server-clientele/node_modules
+server-facturation/node_modules
+server-stock/node_modules
+server-livraison/node_modules
