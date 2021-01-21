@@ -45,9 +45,22 @@ app.get('/', (req, res)=>{
             url : `${conf.hostOptions.serverStock}:${conf.portOptions.serverStock}/decrStock`,
             data : {cart : req.body.cart, iduser : req.body.iduser, decrStock : fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture},
             headers : {"Content-Type": "application/x-www-form-urlencoded"}
-        }).then((data)=>{
+        }).then(async (data)=>{
             console.log('Ok')
-            fileAttente[req.body.iduser.toString()] = null
+            if(fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture){
+                var panier = await LigneCommande.findOne({ where : {idpanier : req.body.idpanier}})
+                panier.livraison = 2
+                await panier.save()
+            }else{
+                var panier = await LigneCommande.findOne({ where : {idpanier : req.body.idpanier}})
+                panier.livraison = 0
+                await panier.save()
+                setTimeout(async ()=>{
+        
+                    fileAttente[req.body.iduser.toString()] = null
+            
+                },10000)
+            }
         }).catch((err)=>{
             console.log('impossible de joindre le serveur stock pour décrémenter', err)
         })
@@ -56,9 +69,22 @@ app.get('/', (req, res)=>{
             url : `${conf.hostOptions.serverBanque}:${conf.portOptions.serverBanque}/facturer`,
             data : {cart : req.body.cart, iduser : req.body.iduser, facturer : fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture, prix : req.body.prix},
             headers : {"Content-Type": "application/x-www-form-urlencoded"}
-        }).then((data)=>{
+        }).then(async (data)=>{
             console.log('Ok')
-            fileAttente[req.body.iduser.toString()] = null
+            if(fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture){
+                var panier = await LigneCommande.findOne({ where : {idpanier : req.body.idpanier}})
+                panier.livraison = 2
+                await panier.save()
+            }else{
+                var panier = await LigneCommande.findOne({ where : {idpanier : req.body.idpanier}})
+                panier.livraison = 0
+                await panier.save()
+            }
+            setTimeout(async ()=>{
+        
+                fileAttente[req.body.iduser.toString()] = null
+        
+            },10000)
         }).catch((err)=>{
             console.log('impossible de joindre le serveur Banque facturer', err)
         })
@@ -95,15 +121,30 @@ app.get('/', (req, res)=>{
         console.log(error)
     }
     if(fileAttente[req.body.iduser.toString()] && fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].stock !== 'undefined'){
-        fileAttente[req.body.iduser.toString()].stock = req.body.facture
+        fileAttente[req.body.iduser.toString()].facture = req.body.facture
+        console.log('a facture', fileAttente[req.body.iduser.toString()])
         axios({
             method : 'POST',
             url : `${conf.hostOptions.serverStock}:${conf.portOptions.serverStock}/decrStock`,
             data : {cart : req.body.cart, iduser : req.body.iduser, decrStock : fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture},
             headers : {"Content-Type": "application/x-www-form-urlencoded"}
-        }).then((data)=>{
+        }).then(async (data)=>{
             console.log('Ok')
-            fileAttente[req.body.iduser.toString()] = null
+            if(fileAttente[req.body.iduser.toString()] && fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture){
+                var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
+                panier.livraison = 2
+                await panier.save()
+            }else{
+                console.log("Facturer ou Stock est faux")
+                var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
+                panier.livraison = 0
+                await panier.save()
+            }
+            setTimeout(async ()=>{
+        
+                fileAttente[req.body.iduser.toString()] = null
+        
+            },10000)
         }).catch((err)=>{
             console.log('impossible de joindre le serveur stock pour décrémenter', err)
         })
@@ -112,21 +153,29 @@ app.get('/', (req, res)=>{
             url : `${conf.hostOptions.serverBanque}:${conf.portOptions.serverBanque}/facturer`,
             data : {cart : req.body.cart, iduser : req.body.iduser, facturer : fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture, prix : req.body.prix},
             headers : {"Content-Type": "application/x-www-form-urlencoded"}
-        }).then((data)=>{
+        }).then(async (data)=>{
+            if(fileAttente[req.body.iduser.toString()] && fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture){
+                var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
+                panier.livraison = 2
+                await panier.save()
+            }else{
+                console.log("Facturer ou Stock est faux")
+                var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
+                panier.livraison = 0
+                await panier.save()
+            }
+            setTimeout(async ()=>{
+        
+                fileAttente[req.body.iduser.toString()] = null
+        
+            },10000)
             console.log('Ok')
-            fileAttente[req.body.iduser.toString()] = null
         }).catch((err)=>{
             console.log('impossible de joindre le serveur Banque facturer', err)
+            
         })
-        if(fileAttente[req.body.iduser.toString()].stock && fileAttente[req.body.iduser.toString()].facture){
-            var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
-            panier.livraison = 2
-            await panier.save()
-        }else{
-            var panier = await LigneCommande.findOne({ where : {idpanier : fileAttente[req.body.iduser.toString()].idpanier}})
-            panier.livraison = 0
-            await panier.save()
-        }
+        
+
     }
     else{
         fileAttente[req.body.iduser.toString()]= {facture : req.body.facture}

@@ -5,7 +5,7 @@ var bodyParser = require("body-parser")
 var axios = require("axios")
 var sha256 = require("sha256")
 var axios = require('axios')
-const {User, Produit, Categorie, LigneCommande, Panier} = require('./model')
+const {User, sequelize, Produit, Categorie, LigneCommande, Panier} = require('./model')
 const { config } = require("process")
 var conf = require('./config')
 const debug = require('express-debug')
@@ -114,6 +114,7 @@ app.get('/categories',async (req, res)=>{
     });
     var temps =await LigneCommande.findAll({
         where : {idpanier : tab},
+        order : [['idlignecommande', 'DESC']],
         include : Produit
     })
     res.json(temps)

@@ -49,6 +49,7 @@ app.get('/', (req, res)=>{
         where : {iduser : req.body.iduser},
         include : Banque
     })
+    console.log(user)
     if(user.count < 1 ){
         axios({
             method : 'POST',

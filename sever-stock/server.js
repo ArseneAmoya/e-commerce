@@ -106,7 +106,7 @@ app.get('/', (req, res)=>{
         console.log(error)
     }
     console.log(req.body)
-    if(!req.body.facturer){
+    if(!req.body.decrStock){
         res.json({res : true})
         return
     }
@@ -115,12 +115,11 @@ app.get('/', (req, res)=>{
     var cartKeys = Object.keys(cart)
     var prix  = 0
     for(cartKey in cartKeys){
-        var produit = Produit.findOne({
+        var produit = await Produit.findOne({
             where: { idproduit : cart[cartKeys[cartKey]].product.idproduit}
         })
         produit.quantite = produit.quantite - cart[cartKeys[cartKey]].amount
         await produit.save()
-        console.log('prix', prix)        
     }
-    res.json({message : Ok});
+    res.json({message : 'Ok'});
 })
